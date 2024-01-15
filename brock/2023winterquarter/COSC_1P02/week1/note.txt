@@ -1,0 +1,10 @@
+borkc library
+class is what a object should be 
+class is describe polygon 
+. class
+    - eg turtle
+    - definition of a kind of empty object
+    -defnies operation methods entities can perform
+object
+    - one entity from a class (a turtle)
+    created using new
