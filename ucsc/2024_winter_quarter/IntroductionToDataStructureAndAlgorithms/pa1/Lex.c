@@ -1,13 +1,17 @@
-/*
-Minh Anh Le
-2028648
-*/
+/***
+* Anh Le // First and Last name
+* mle288 // UCSC UserID
+* 2024 Winter CS101 PA1
+* Lex.c // FileName
+* The main program/User interface to run the ADT  // Describe the program
+***/
 
-
-
+#define _GNU_SOURCE
 #include "List.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
+#include <stdbool.h>
 
 #define MAX_LINE_LENGTH 500
 
@@ -42,7 +46,7 @@ the comments here for more on this topic.)
     }
 
     // Array of string
-    char **linesArray = (char **)malloc(lineCount * sizeof(char *));
+    char **linesArray = (char **)malloc(line * sizeof(char *));
     if (linesArray == NULL) {
         fclose(inputFile);
         exit(EXIT_FAILURE);
@@ -73,6 +77,10 @@ the comments here for more on this topic.)
     // Close the input file
     fclose(inputFile);
 
+    // for (int i = 0; i < line; i ++) {
+    //     printf("Array[%i]: %s\n", i, linesArray[i]);
+    // }
+
     /*
     Create a List whose elements are the indices of the above string array.  These indices should be arranged 
     in an order that indirectly sorts the array.  Using the above input file as an example we would have. 
@@ -101,9 +109,9 @@ the comments here for more on this topic.)
     List indicesList = newList();
     // Append the indices of the first character of the array
     append(indicesList, 0);
-    
+
     // insert the indices base on the alphabetical order of the array
-    for (int i = 0; i < line - 1; i++) {
+    for (int i = 1; i < line; i++) {
             moveFront(indicesList); // Start at the front of the List
 
             // Find the correct position to insert the current index
@@ -120,9 +128,10 @@ the comments here for more on this topic.)
                 insertBefore(indicesList, i);
             }
     }
+    // printList(stdout, indicesList);
 
     // Print the array in alphabetical order to the output file
-    FILE *outputFile = fopen("output.txt", "w");
+    FILE *outputFile = fopen(argv[2], "w");
     if (outputFile == NULL) {
         freeList(&indicesList);
         return EXIT_FAILURE;
@@ -131,7 +140,7 @@ the comments here for more on this topic.)
     // Print the array based on the sorted indices
     moveFront(indicesList);
     while (listIndex(indicesList) != -1) {
-        fprintf(outputFile, "%s ", stringArray[get(indicesList)]);
+        fprintf(outputFile, "%s", linesArray[get(indicesList)]);
         moveNext(indicesList);
     }
 

@@ -1,11 +1,17 @@
-/*
-Minh Anh Le
-2028648
-*/
+/***
+* Anh Le // First and Last name
+* mle288 // UCSC UserID
+* 2024 Winter CS101 PA1
+* List.c // FileName
+* Private struct of the ADT and function of the ADT // Describe the program
+***/
 
 
 #include "List.h"
+#include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
+#include <stdbool.h>
 
 struct NodeObj {
   int data;
