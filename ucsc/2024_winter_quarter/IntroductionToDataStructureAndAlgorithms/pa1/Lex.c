@@ -77,9 +77,9 @@ the comments here for more on this topic.)
     // Close the input file
     fclose(inputFile);
 
-    // for (int i = 0; i < line; i ++) {
-    //     printf("Array[%i]: %s\n", i, linesArray[i]);
-    // }
+    for (int i = 0; i < line; i ++) {
+        printf("Array[%i]: %s\n", i, linesArray[i]);
+    }
 
     /*
     Create a List whose elements are the indices of the above string array.  These indices should be arranged 
@@ -140,6 +140,8 @@ the comments here for more on this topic.)
     // Print the array based on the sorted indices
     moveFront(indicesList);
     while (listIndex(indicesList) != -1) {
+        printList(stdout, indicesList);
+        printf("\n");
         fprintf(outputFile, "%s", linesArray[get(indicesList)]);
         moveNext(indicesList);
     }

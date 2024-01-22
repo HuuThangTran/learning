@@ -9,10 +9,10 @@
 #------------------------------------------------------------------------------
 
 Lex : Lex.o List.o
-	gcc -std=c17 -Wall -o Lex Lex.o List.o
+	gcc -Wall -o Lex Lex.o List.o
 
 Lex.o : Lex.c List.h
-	gcc -std=c17 -Wall -c Lex.c
+	gcc -Wall -c Lex.c
 
 ListTest: ListTest.o List.o
 	gcc -std=c17 -Wall -o ListTest ListTest.o List.o
