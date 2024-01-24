@@ -34,6 +34,13 @@ public  void DrawSquare() {
     }
 }
 
+// short = int but 2 bytes
+// int = 4 byetes
+// long 8 bytes
+//float and double decimal
+
+//casting long data type to short datatype casting
+// direct number are consider interger => cant be put into short
 
 
 
