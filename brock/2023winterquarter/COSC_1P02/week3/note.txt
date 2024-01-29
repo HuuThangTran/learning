@@ -1,0 +1,19 @@
+you create a method for efficient and make it simple for you
+you need a method to repeat that multiple time, call that method again and again 
+
+drawsquare method declare receiving something it is call parameter
+actual parameter: the integer that you input in the class (calling that method)
+remember to input the local variables into the function
+
+we can have the same name for different method ? 
+#it is a case of overloading ?
+#test in c pls
+# what is class
+# why is method in class ?
+
+
+
+3 constructor with the same name but different input parameters
+
+constructor can be consider as method (thang opinion)
+class variables and instnace variables
