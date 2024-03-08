@@ -347,31 +347,31 @@ using namespace std;
         num_pairs++;
     }
 
-    void transplant(Dictionary* T, Dictionary::Node* u, Dictionary::Node* v){
-        /*
-        ----------------------
-        Transplant(T, u, v)
-        ----------------------
-        if u.parent == NIL
-            T.root = v
-        else if u == u.parent.left
-            u.parent.left = v
-        else 
-            u.parent.right = v
-        if v != NIL
-            v.parent = u.parent
-        */
-        if(u->parent == nullptr){
-            T->root = v;
-        }else if(u == u->parent->left){
-            u->parent->left = v;
-        }else{
-            u->parent->right = v;
-        }
-        if(v != nullptr){
-            v->parent = u->parent;
-        }
-    }
+    // void transplant(Dictionary* T, Dictionary::Node* u, Dictionary::Node* v){
+    //     /*
+    //     ----------------------
+    //     Transplant(T, u, v)
+    //     ----------------------
+    //     if u.parent == NIL
+    //         T.root = v
+    //     else if u == u.parent.left
+    //         u.parent.left = v
+    //     else 
+    //         u.parent.right = v
+    //     if v != NIL
+    //         v.parent = u.parent
+    //     */
+    //     if(u->parent == nullptr){
+    //         T->root = v;
+    //     }else if(u == u->parent->left){
+    //         u->parent->left = v;
+    //     }else{
+    //         u->parent->right = v;
+    //     }
+    //     if(v != nullptr){
+    //         v->parent = u->parent;
+    //     }
+    // }
 
     // remove()
     // Deletes the pair for which key==k. If that pair is current, then current
@@ -451,123 +451,114 @@ using namespace std;
         // delete N;
         // num_pairs --;
         // Pre: contains(k).
+        if (! contains(k)) {
+            throw std::logic_error(".remove() pre: contains(k)");
+        }
+        Node* nodeToDel = search(root, k);
 
+        // set the current to nil in advance if is point to the same nodetodel
+        if (nodeToDel == current) {
+            current = nil;
+        }
 
-        // if (! contains(k)) {
-        //     throw std::logic_error(".remove() pre: contains(k)");
-        // }
-        // Node* nodeToDel = search(root, k);
-
-        // // set the current to nil in advance if is point to the same nodetodel
-        // if (nodeToDel == current) {
-        //     current = nil;
-        // }
-
-        // // 4 cases
+        // 4 cases
         
-        // //case 1: nodeToDel is the last node with no childen
-        // if (nodeToDel->left == nil && nodeToDel->right == nil) {
-        //     // check for root
-        //     if (nodeToDel == root) {
-        //         root = nil;
-        //     } 
-        //     // if it has parent
-        //     else {
-        //         // set the parent to nil
-        //         if (nodeToDel->parent->left == nodeToDel) {
-        //             nodeToDel->parent->left = nil;
-        //         } else {
-        //             nodeToDel->parent->right = nil;
-        //         }
-        //     }
+        //case 1: nodeToDel is the last node with no childen
+        if (nodeToDel->left == nil && nodeToDel->right == nil) {
+            // check for root
+            if (nodeToDel == root) {
+                root = nil;
+            } 
+            // if it has parent
+            else {
+                // set the parent to nil
+                if (nodeToDel->parent->left == nodeToDel) {
+                    nodeToDel->parent->left = nil;
+                } else {
+                    nodeToDel->parent->right = nil;
+                }
+            }
             
-        //     //finally delete
-        //     delete nodeToDel;
-        // }
+            //finally delete
+            delete nodeToDel;
+        }
 
 
-        // //case 2: nodeToDel has children but only left 
-        // else if (nodeToDel->right == nil) {
-        //     // check for root
-        //     if (nodeToDel == root) {
-        //         root = nodeToDel->left;
-        //     } 
-        //     // in the middle => has parent
-        //     else {
+        //case 2: nodeToDel has children but only left 
+        else if (nodeToDel->right == nil) {
+            // check for root
+            if (nodeToDel == root) {
+                root = nodeToDel->left;
+            } 
+            // in the middle => has parent
+            else {
 
-        //         // set the parent to to point to point to the children
-        //         if (nodeToDel->parent->left == nodeToDel) {
-        //             nodeToDel->parent->left = nodeToDel->left;
-        //         } else {
-        //             nodeToDel->parent->right = nodeToDel->left;
-        //         }
-        //     }
+                // set the parent to to point to point to the children
+                if (nodeToDel->parent->left == nodeToDel) {
+                    nodeToDel->parent->left = nodeToDel->left;
+                } else {
+                    nodeToDel->parent->right = nodeToDel->left;
+                }
+            }
 
-        //     nodeToDel->left->parent = nodeToDel->parent;
-        //     delete nodeToDel;
-        // }
+            nodeToDel->left->parent = nodeToDel->parent;
+            delete nodeToDel;
+        }
 
-        // // case 3 only right child
-        // else if (nodeToDel->left == nil) {
-        //     // check for root
-        //     if (nodeToDel == root) {
-        //         root = nodeToDel->right;
-        //     } 
-        //     // it has parent
-        //     else {
+        // case 3 only right child
+        else if (nodeToDel->left == nil) {
+            // check for root
+            if (nodeToDel == root) {
+                root = nodeToDel->right;
+            } 
+            // it has parent
+            else {
 
-        //         // set the parent to point to the children
-        //         if (nodeToDel->parent->left == nodeToDel) {
-        //             nodeToDel->parent->left = nodeToDel->right;
-        //         } else {
-        //             nodeToDel->parent->right = nodeToDel->right;
-        //         }
-        //     }
+                // set the parent to point to the children
+                if (nodeToDel->parent->left == nodeToDel) {
+                    nodeToDel->parent->left = nodeToDel->right;
+                } else {
+                    nodeToDel->parent->right = nodeToDel->right;
+                }
+            }
 
 
-        //     nodeToDel->right->parent = nodeToDel->parent;
-        //     delete nodeToDel;
-        // }
+            nodeToDel->right->parent = nodeToDel->parent;
+            delete nodeToDel;
+        }
 
-        // // case 4: has children both side => traversing all the right side
-        // // let the min child of right side be the first children
-        // else {
-        //     Node* minChild = findMin(nodeToDel->right);
+        // case 4: has children both side => traversing all the right side
+        // let the min child of right side be the first children
+        else {
+            Node* minChild = findMin(nodeToDel->right);
 
-        //     // check for condition
-        //     if (minChild->parent != nodeToDel) {
-        //         minChild->parent->left = minChild->right;
+            // check for condition
+            if (minChild->parent != nodeToDel) {
+                minChild->parent->left = minChild->right;
                 
                 
-        //         if (minChild->right != nil) {
-        //             minChild->right->parent = minChild->parent;
-        //         }
-
+                if (minChild->right != nil) {
+                    minChild->right->parent = minChild->parent;
+                }
                 
-        //         minChild->right = nodeToDel->right;
-        //         minChild->right->parent = minChild;
-        //     }
-
-        //     if (nodeToDel == root) {
-        //         root = minChild;
-        //     } 
-            
-        //     else {
-        //         if (nodeToDel->parent->left == nodeToDel) {
-        //             nodeToDel->parent->left = minChild;
-        //         } else {
-        //             nodeToDel->parent->right = minChild;
-        //         }
-        //     }
-
-        //     minChild->parent = nodeToDel->parent;
-        //     minChild->left = nodeToDel->left;
-        //     minChild->left->parent = minChild;
-        //     delete nodeToDel;
-        //     }
-
-        // num_pairs--;
-        
+                minChild->right = nodeToDel->right;
+                minChild->right->parent = minChild;
+            }
+            if (nodeToDel == root) {
+                root = minChild;
+            } else {
+                if (nodeToDel->parent->left == nodeToDel) {
+                    nodeToDel->parent->left = minChild;
+                } else {
+                    nodeToDel->parent->right = minChild;
+                }
+            }
+            minChild->parent = nodeToDel->parent;
+            minChild->left = nodeToDel->left;
+            minChild->left->parent = minChild;
+            delete nodeToDel;
+            }
+        num_pairs--;
     }
 
     // begin()

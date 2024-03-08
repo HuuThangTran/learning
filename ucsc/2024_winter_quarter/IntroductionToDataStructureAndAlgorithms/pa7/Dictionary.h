@@ -220,7 +220,7 @@ public:
    // reference to this Dictionary.
    Dictionary& operator=( const Dictionary& D );
    
-   friend void transplant(Dictionary* T, Dictionary::Node* u, Dictionary::Node* v);
+   // friend void transplant(Dictionary* T, Dictionary::Node* u, Dictionary::Node* v);
 
 };
 
