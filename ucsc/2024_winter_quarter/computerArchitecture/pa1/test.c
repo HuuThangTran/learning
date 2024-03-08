@@ -61,6 +61,19 @@ funct3: 100
 encoded RV64I instruction in binary : 0b00000000001100100100000110010011
 0x324193
 
+xor x1, x1, x2
+xor rd rs1, rs2
+rd: x1 =  00001
+rs1: x1 = 00001
+rs2: x2 = 00010
+we have rd, rs1, rs2 
+opcode: 0110011
+funct3: 100
+funct7: 0000000
+R type
+encoded RV64I instruction in binary 0000000 00010 00001 100 00001 0110011
+0x20C0B3
+
 (ii) lw x6, 11(x4)
 lw rd, offset(rs1)
 rd: x6 = 00110

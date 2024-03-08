@@ -3,14 +3,11 @@
 * mle288 // UCSC UserID
 * 2024 Winter CS101 PA1
 * README.md // FileName
-* Graph.h Private and hide the the fucntion from Graph.c to the user and create and define a header file // Describe the program
+* Graph.c the implementation of the function declare in graph.h // Describe the program
 ***/
 
 #include "Graph.h"
 #include <stdio.h>
-#include "List.h"
-
-// for int main void
 #include <stdlib.h>
 
 
@@ -18,40 +15,6 @@
 #define COLOR_GRAY  ((char)1)
 #define COLOR_BLACK ((char)2)
 
-
-
-// for int main void
-#define MAX_LINE_LENGTH 100
-
-
-
-struct GraphObj {
-    /*
-• An array of Lists whose ith element contains the neighbors of vertex i.
-• An array of ints (or chars, or strings) whose ith element is the color (white, gray, black) of vertex i.
-• An array of ints whose ith element is the parent of vertex i.
-• An array of ints whose ith element is the distance from the (most recent) source to vertex i.
-You should also include fields storing the number of vertices (called the order of the graph), the number of
-edges (called the size of the graph), and the label of the vertex that was most recently used as source for
-BFS. It is recommended that all arrays be of length 𝑛 + 1, where 𝑛 is the number of vertices in the graph,
-and that only indices 1 through n be used. This is so that array indices can be directly identified with vertex
-labels
-    */
-    // An array of Lists whose ith element contains the neighbors of vertex i.
-    List* adjacencyList;
-    // An array of ints (or chars, or strings) whose ith element is the color (white, gray, black) of vertex i.
-    char* color;
-    // An array of ints whose ith element is the parent of vertex i.
-    int* parent; 
-    // An array of ints whose ith element is the distance from the (most recent) source to vertex i.
-    int* distance;
-    // You should also include fields storing the number of vertices (called the order of the graph)
-    int order;
-    // the number of edges (called the size of the graph)
-    int size;
-    int* discovery;
-    int* finish;
-};
 
 /*** Constructors-Destructors ***/
 Graph newGraph (int n) {
@@ -96,20 +59,6 @@ void  freeGraph (Graph* pG) {
 }
 
 /*** Access functions ***/
-
-//Pa2
-// int getSource (Graph G) {
-//     return G->source;
-// }
-// pa2
-// int getDist   (Graph G, int u) {
-
-// }
-// pa2
-// void getPath   (List L, Graph G, int u) {
-    
-// }
-
 // getOrder() returns the number of vertices in 𝐺
 int getOrder  (Graph G) {
     return G->order;
@@ -147,7 +96,7 @@ int getDiscover(Graph G, int u) {
     printf("getDiscorver ERROR: u < 1 || u > G->getOrder()\n");
     exit(EXIT_FAILURE);
     }
-    return G->parent[u];
+    return G->discovery[u];
 }
 int getFinish(Graph G, int u) {
     /* Pre: 1<=u<=n=getOrder(G) */ 
@@ -155,7 +104,7 @@ int getFinish(Graph G, int u) {
     printf("getDiscorver ERROR: u < 1 || u > G->getOrder()\n");
     exit(EXIT_FAILURE);
     }
-    return G->parent[u];
+    return G->finish[u];
 }
 
 
@@ -212,21 +161,33 @@ Function addArc()
 inserts a new directed edge from u to v, i.e. v is added to the adjacency List of u (but not u to the adjacency
 List of v). 
 */
+
 void addArc(Graph G, int u, int v) {
     /* Pre: 1<=u<=n, 1<=v<=n */
     if (u < 1 || u > getOrder(G) || v < 1 || v > getOrder(G)) {
         printf("Violation of precondition: Vertex indeces must be in the range of 1 to %i\n",G->order);
         exit(EXIT_FAILURE);
     }
-    insertVertices(G,v,u);
+    insertVertices(G,u,v);
     G->size ++;
 }
 
+
 // helper function for DFS
-void visit(Graph G, int u, List S, int time) {
+void visit(Graph G, int u, List S, int* time) {
+    //     1. 𝑑[𝑥] = (+ + time) // discover 𝑥
+    G->discovery[u] = ++(*time);
+    // printf("Will be vising %d \n", u);
+    // 2. color[𝑥] = gray
     G->color[u] = COLOR_GRAY;
-    printf("time: %i", time);
-    G->discovery[u] = ++time;
+    // printf("Visit status of vetices %i is %d\n",u, G->color[u]);
+    
+    // printf("vertices %i with discovery time: %i\n", u, *time);
+
+    // 3. for all 𝑦 ∈ adj[𝑥]
+    // 4. if color[𝑦] == white
+    // 5. 𝑝[𝑦] = 𝑥
+    // 6. Visit(𝑦)
     List adjacencyList = G-> adjacencyList[u];
     moveFront(adjacencyList);
 
@@ -240,10 +201,38 @@ void visit(Graph G, int u, List S, int time) {
 
         moveNext(adjacencyList);
     }
-
+    // 7. color[𝑥] = black
+    // 8. 𝑓[𝑥] = (+ + time) // finish 𝑥
     G->color[u] = COLOR_BLACK; // Mark the vertex as processed (black)
-    G->finish[u] = ++time; // Record the finish time
-    prepend(S, u); // Store the vertex in the List S (considered as a stack)
+    G->finish[u] = ++(*time); // Record the finish time
+    // printf("u: %i which is also the index needed to be deleted\n",u);
+    int deleteIndex = -1;
+    moveFront(S);
+    // printList(stdout, S);
+    // printf("\n");
+    for (int i = 1; i <= length(S); i++) {
+        if (get(S) == u) {
+            // Store the index for deletion
+            deleteIndex = index(S);
+            break; // No need to continue searching
+        }
+        moveNext(S);
+    }
+
+    // Delete the marked element
+    if (deleteIndex != -1) {
+        moveFront(S);
+        for (int i = 0; i < deleteIndex; i++) {
+            moveNext(S);
+        }
+        // printList(stdout, S);
+        // printf("\n");
+        delete(S);
+    }
+
+    // Append u to the end of the list
+    append(S, u);
+    // printf("finish time: %i for vertices %i\n", *time, u);
 }
 
 /*
@@ -254,29 +243,81 @@ variable to Visit(). This is perhaps the simplest option, and is recommended.
 
 void DFS(Graph G, List S){
     /* Pre: length(S)==getOrder(G) */
+    // 1. for all 𝑥 ∈ 𝑉(𝐺)
+    // 2. color[𝑥] = white
+    // 3. 𝑝[𝑥] = nil
+    // 4. time = 0
+    // 5. for all 𝑥 ∈ 𝑉(𝐺)
+    // 6. if color[𝑥] == white
+    // 7. Visit(𝑥
     if (length(S) != getOrder(G)) {
         printf("DFS precondtion not fulfiled length(S)==getOrder(G)");
+        exit(EXIT_FAILURE);
+    }
+    // Initialize color array, parent array, and time
+    for (int i = 1; i <= getOrder(G); i++) {
+        G->color[i] = COLOR_WHITE;
+        G->parent[i] = NIL;
     }
 
     // Creating local static variable in DFS for tracking time DFS and pass it into visit()
-    static int time = 0;
-
+    int time = 0;
     moveFront(S);
-    while(index(S) >= 0) {
-        int n = get(S);
-        if(G->color[n] == COLOR_WHITE) {
-            visit(G, n, S, time);
+    for (int i = 1; i <= getOrder(G); i ++){
+        if(G->color[i] == COLOR_WHITE) {
+            // printf("Will be vising %d with time %i\n", G->color[n], time);
+            visit(G, i, S, &time);
         }
-        moveNext(S);
     }
-
-
-} 
+}
 
 
 /*** Other operations ***/
-Graph transpose(Graph G);
-Graph copyGraph(Graph G);
+Graph transpose(Graph G) {
+    int n = getOrder(G); // Number of vertices in the original graph
+    Graph transposedGraph = newGraph(n); // Create a new graph with the same number of vertices
+
+    // Iterate through each vertex in the original graph
+    for (int u = 1; u <= n; u++) {
+        List adjacencyList = G->adjacencyList[u];
+        
+        // Iterate through the neighbors of the current vertex in the original graph
+        moveFront(adjacencyList);
+        while (index(adjacencyList) >= 0) {
+            int v = get(adjacencyList);
+            
+            // Add an edge from v to u in the transposed graph
+            addArc(transposedGraph, v, u);
+
+            moveNext(adjacencyList);
+        }
+    }
+    return transposedGraph;
+}
+
+Graph copyGraph(Graph G) {
+    if (G == NULL) {
+        return NULL; // Handle NULL input graph
+    }
+    // Create a new graph with the same number of vertices
+    Graph copy = newGraph(getOrder(G));
+
+    // Iterate through vertices and edges in the original graph
+    for (int i = 1; i <= getOrder(G); i++) {
+        List originalAdjList = G->adjacencyList[i];
+        moveFront(originalAdjList);
+
+        // Iterate through the adjacency list of each vertex
+        while (index(originalAdjList) >= 0) {
+            int neighbor = get(originalAdjList);
+            
+            // Add directed edge to the new graph
+            addArc(copy, i, neighbor);
+            moveNext(originalAdjList);
+        }
+    }
+    return copy;
+}
 
 
 void printGraph(FILE* out , Graph G) {
@@ -294,70 +335,68 @@ void printGraph(FILE* out , Graph G) {
 }
 
 
-int main(int argc, char* argv[]) {
-    // Check that there are two command line argument
-    if (argc != 3) {
-        printf("Usage: ./FindPath input_file output_file\n");
-        exit(EXIT_FAILURE);
+void FindSCC (Graph G, FILE* outputFile) {
+    List L = newList();
+    int b = getOrder(G);
+    for (int i = 1; i <= b; i ++) {
+        append(L, i);
     }
-
-    // Open the input file and exit if cannot
-    FILE *inputFile = fopen(argv[1], "r");
-    if (inputFile == NULL) {
-        printf("No inputfile with name %s is found\n", argv[1]);
-        exit(EXIT_FAILURE);
+    // printf("Order of G : %i\n", b);
+    DFS(G, L);
+    // printf("before transposing: ");
+    // printList(stdout, L);
+    // printf("\n");
+    // Now we transpose graph G and compute DFS with a output of a reverse List with DFS
+    Graph GTA = transpose(G);
+    // fprintf(outputFile, "Trans Graph:\n");
+    // printGraph(outputFile, GTA);
+    List gta = newList();
+    for (int i = 1; i <= b; i ++) {
+        append(gta, i);
     }
-
-    FILE *outputFile = fopen(argv[2], "w");
-    if (outputFile == NULL) {
-        printf("Error: cannot open %s for writing\n", argv[2]);
-        exit(EXIT_FAILURE);
+    // printList(stdout, gta);
+    DFS(GTA, gta);
+    // printf("after transposing: ");
+    // printList(stdout, gta);
+    // printf("\n");
+    // printGraph(stdout, GTA);
+    // printf("\n");
+    int numberOfNILparent = 0;
+    // printf("Order of GTA: %i", getOrder(GTA));
+    for (int i = 1; i <= getOrder(GTA); i++) {
+        if (GTA->parent[i] == 0) {
+            // printf("GTA->parent[%i] is %i\n", i, GTA->parent[i]);
+            numberOfNILparent++;
+        }
     }
+    // printf("number of parent: %i\n",numberOfNILparent);
+    fprintf(outputFile, "G contains %i strongly connected componnets:", numberOfNILparent);
+    int u;
+    // int currentParent = NIL;
+    moveBack(gta);
+    int indexNo = 0;
+    while (index(gta) >= 0) {
+        u = get(gta);
 
-    // Count the number of line in the input file
-    int line = 0;
-    char buffer[MAX_LINE_LENGTH];
-
-    while (fgets(buffer, sizeof(buffer), inputFile) != NULL) {
-        line++;
+        if (GTA->parent[u] == NIL) {
+            // Mark the beginning of a new strong component
+            indexNo++;
+            fprintf(outputFile,"\n");
+            fprintf(outputFile,"Component %i: ", indexNo);
+        }
+        fprintf(outputFile, "%d ", u);
+        // Check if the parent changes, indicating the end of a strong component
+        movePrev(gta);
     }
-    printf("The number of line: %i\n", line);
-
-    // In case of no line in the text file which can result in segmentation fault we exit 
-    if (line == 0) {
-        printf("No script in %s file\n", argv[1]);
-        exit(EXIT_FAILURE);
-    }
-    rewind(inputFile);
-
-    // the first line is the number of vertices
-    int numVertices;
-    // REad the first line into the integer   
-    if (fscanf(inputFile, "%d", &numVertices) != 1) {
-        printf("Error while reading the number of vertices.\n");
-        fclose(inputFile);
-        return 1;
-    }
-    Graph G = newGraph(numVertices);
-    printf("Order: %i\n", G->order);
-    printf("The nubmer of vertices: %i\n", numVertices);
-
-    // Reading the next folliwing lines for vertices sources and their destination to implement edges
-    int src, dest;
-    while (fscanf(inputFile, "%d %d", &src, &dest) == 2 && (src != 0 && dest != 0)) {
-        // Print the line
-        addArc(G, src, dest);
-        printf("Read: %d, %d\n", src, dest);
-    }
-    // Print out the size to check Size: the number of edges
-    printf("size: %i\n", G->size);
-
-    // Print out to the ouput file, now printing to the terminal to check
-    printf("Output:\nAdjacency list representation of G:\n");
-    printGraph(stdout,G);
-    fprintf(outputFile, "Output:\nAdjacency list representation of G:\n");
-    printGraph(outputFile, G);
-
-
+    // Print a newline at the end in case the last strong component is not followed by a new one
+    fprintf(outputFile,"\n");
+    freeList(&L);
+    freeList(&gta);
+    freeGraph(&GTA);
 }
+
+
+
+
+
 
